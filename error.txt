@@ -1,0 +1,7 @@
+2024/05/22 11:06:00 Email is required
+2024/05/22 11:20:38 Email is required
+2024/05/22 11:28:30 All fields are required
+2024/05/22 11:56:08 All fields are required
+2024/05/22 12:26:58 Error binding request: strconv.ParseUint: parsing "kibet": invalid syntax
+2024/05/22 12:26:58 All fields are required
+2024/05/23 12:41:27 All fields are required
