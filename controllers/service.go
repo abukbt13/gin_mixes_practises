@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
 	"practise/config"
 	"practise/logs"
 	"practise/models"
@@ -96,7 +97,7 @@ type LoginRequest struct {
 	Password string `form:"password" binding:"required"`
 }
 
-var jwtSecret = []byte("2022@abu")
+var jwtSecret = []byte(os.Getenv("JW_SECRET"))
 
 func generateJWT(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -151,5 +152,30 @@ func LoginUser(c *gin.Context) {
 		"status":  "success",
 		"message": "Logged in successfully",
 		"token":   token,
+	})
+}
+
+// Define a struct to match the selected fields
+type UserResponse struct {
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
+
+func ProtectedEndpoint(c *gin.Context) {
+
+	// Define a slice of the UserResponse struct to hold the result
+	var users []UserResponse
+	if err := config.DB.Model(&models.User{}).Select("email, name").Find(&users).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Failed to retrieve users",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Users retrieved successfully",
+		"users":   users,
 	})
 }

@@ -5,3 +5,4 @@
 2024/05/22 12:26:58 Error binding request: strconv.ParseUint: parsing "kibet": invalid syntax
 2024/05/22 12:26:58 All fields are required
 2024/05/23 12:41:27 All fields are required
+2024/05/30 15:11:19 All fields are required
