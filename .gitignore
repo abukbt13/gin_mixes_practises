@@ -1,0 +1,7 @@
+# .gitignore file for Go (Gin framework)
+
+# Binaries for programs and plugins
+*.exe
+*.exe
+
+.env
