@@ -1,39 +1,37 @@
 package picture
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
-	"practise/config"
-	"practise/logs"
-	"practise/models"
-	"strings"
 )
 
+// type Req struct {
+// 	Name      string   `form:"name"`
+// }
+
 func SavePictures(c *gin.Context) {
-	var req models.Picture
-	if err := c.ShouldBind(&req); err != nil {
-		logs.LogToFile("Error binding request: " + err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// var req := Req
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("Error parsing form: %s", err.Error()))
 		return
 	}
-	if strings.TrimSpace(req.Description) == "" || strings.TrimSpace(req.PictureName) == "" {
-		// Log the error to a file
-		logs.LogToFile("All fields are required")
-		// Return a response with status Bad Request (400)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "failed",
-			"message": "All fields are required"})
-		return
-	}
+	files := form.File["upload[]"]
 
-	if err := config.DB.Create(&req).Error; err != nil {
-		logs.LogToFile("Error saving picture: " + err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save picture"})
-		return
-	}
+	for _, file := range files {
+		log.Println(file.Filename)
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":  "success",
-		"picture": req,
-	})
+		// Specify the destination directory where the file will be saved
+		dst := "./uploads/" + file.Filename
+
+		// Save the uploaded file to the specified destination
+		if err := c.SaveUploadedFile(file, dst); err != nil {
+			c.String(http.StatusInternalServerError, fmt.Sprintf("Error saving file: %s", err.Error()))
+			return
+		}
+	}
+	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
+
 }

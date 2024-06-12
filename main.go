@@ -17,7 +17,7 @@ func main() {
 
 	// Create a new default Gin router
 	r := gin.Default()
-
+	r.MaxMultipartMemory = 8 << 20
 	// Map URL routes using a custom function router.mapUrl
 	router.MapUrl(r)
 
